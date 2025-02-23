@@ -293,7 +293,7 @@
           "step": 1
         },
         {
-          "title": "Timer",
+          "title": "Incap Timer",
           "description": "The time it took for the robot to finish autonomous.",
           "type": "timer",
           "required": false,
