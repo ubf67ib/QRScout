@@ -138,6 +138,14 @@
           "step": 1
         },
         {
+          "title": "Timer",
+          "description": "The time it took for the robot to finish autonomous.",
+          "type": "timer",
+          "required": false,
+          "code": "timer",
+          "defaultValue": 0
+        },
+        {
           "title": "Coral L2/3 Scored",
           "description": "The number of level 2 and 3 coral scored during auto.",
           "type": "counter",
