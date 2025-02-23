@@ -170,7 +170,7 @@
           "step": 1
         },
         {
-          "title": "Dislodged Algae",
+          "title": "Algae Dislodged",
           "type": "counter",
           "required": false,
           "code": "dto",
@@ -259,6 +259,15 @@
           "type": "counter",
           "required": false,
           "code": "CMA",
+          "defaultValue": 0,
+          "min": 0,
+          "step": 1
+        },
+        {
+          "title": "Algae Dislodged",
+          "type": "counter",
+          "required": false,
+          "code": "dto",
           "defaultValue": 0,
           "min": 0,
           "step": 1
