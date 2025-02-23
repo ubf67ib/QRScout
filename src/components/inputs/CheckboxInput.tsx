@@ -1,25 +1,47 @@
-import React from 'react'
-import BaseInputProps from './BaseInputProps'
+import { useEvent } from '@/hooks';
+import { inputSelector, updateValue, useQRScoutState } from '@/store/store';
+import React, { useEffect } from 'react';
+import { Switch } from '../ui/switch';
+import { BooleanInputData } from './BaseInputProps';
+import { ConfigurableInputProps } from './ConfigurableInput';
 
-export interface BoolInputProps extends BaseInputProps {
-  defaultValue?: boolean
-}
+export default function CheckboxInput(props: ConfigurableInputProps) {
+  const data = useQRScoutState(
+    inputSelector<BooleanInputData>(props.section, props.code),
+  );
 
-export default function Checkbox(data: BoolInputProps) {
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    data.onChange(e.currentTarget.checked)
+  if (!data) {
+    return <div>Invalid input</div>;
   }
 
+  const [checked, setChecked] = React.useState(data.defaultValue);
+
+  const resetState = React.useCallback(
+    ({ force }: { force: boolean }) => {
+      if (force) {
+        setChecked(data.defaultValue);
+        return;
+      }
+      if (data.formResetBehavior === 'preserve') {
+        return;
+      }
+      setChecked(data.defaultValue);
+    },
+    [data.defaultValue],
+  );
+
+  useEvent('resetFields', resetState);
+
+  useEffect(() => {
+    updateValue(props.code, checked);
+  }, [checked]);
+
   return (
-    <div className="form-check form-switch">
-      <input
-        className="form-check-input m-2 h-5 w-9 cursor-pointer appearance-none rounded-full bg-gray-300 bg-contain bg-no-repeat align-top shadow-sm focus:outline-none"
-        type="checkbox"
-        role="switch"
-        id={data.title}
-        onInput={handleChange}
-        checked={data.value}
-      />
-    </div>
-  )
+    <Switch
+      checked={checked}
+      onCheckedChange={setChecked}
+      id={data.title}
+      className="m-2"
+    />
+  );
 }

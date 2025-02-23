@@ -1,25 +1,48 @@
-import React from 'react'
+import { Info, TriangleAlert } from 'lucide-react';
+import React from 'react';
+import { Card, CardContent } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 
 export interface InputCardProps {
-  title: string
-  required: boolean
-  hasValue: boolean
+  title: string;
+  required: boolean;
+  hasValue: boolean;
+  description?: string;
 }
 
 export default function InputCard(
-  props: React.PropsWithChildren<InputCardProps>
+  props: React.PropsWithChildren<InputCardProps>,
 ) {
   return (
-    <div className="mx-1 rounded bg-white leading-tight shadow-sm dark:bg-gray-500">
-      <div className="flex flex-row justify-between rounded-t bg-gray-300">
-        <p className="pl-2 text-left text-xs font-bold uppercase dark:text-black">
-          {props.title}
-        </p>
-        {props.required && !props.hasValue && (
-          <p className="mr-1 h-4 w-4 font-rhr text-red-rhr">!!</p>
+    <Card>
+      <div className="flex justify-between bg-secondary px-1 items-center rounded-t-xl">
+        <div className="flex gap-2 ">
+          {props.required && !props.hasValue && (
+            <TriangleAlert className="text-primary animate-pulse size-4" />
+          )}
+          <h1 className="capitalize text-secondary-foreground text-sm">
+            {props.title.toUpperCase()}
+          </h1>
+        </div>
+        {props.description && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Info className="text-secondary-foreground size-4" />
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>{props.title}</DialogTitle>
+              <DialogDescription>{props.description}</DialogDescription>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
-      <div>{props.children}</div>
-    </div>
-  )
+      <CardContent className="p-0">{props.children}</CardContent>
+    </Card>
+  );
 }
