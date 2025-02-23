@@ -293,14 +293,6 @@
           "step": 1
         },
         {
-          "title": "Incap Timer",
-          "description": "The time the robot was unable to do anything.",
-          "type": "timer",
-          "required": false,
-          "code": "timer",
-          "defaultValue": 0
-        },
-        {
           "title": "Crossed Field/Played Defense?",
           "type": "boolean",
           "required": false,
