@@ -16,11 +16,15 @@ export interface QRModalProps {
   disabled?: boolean;
 }
 
-export function getQRCodeData(formData: Config): string {
-  return formData.sections
-    .map(s => s.fields)
-    .flat()
-    .map(function(obj) {
+export function QRModal(props: QRModalProps) {
+  const fieldValues = useQRScoutState(state => state.fieldValues);
+  const formData = useQRScoutState(state => state.formData);
+  const title = `${getFieldValue('robot')} - M${getFieldValue(
+    'matchNumber',
+  )}`.toUpperCase();
+
+  const qrCodePreview = useMemo(
+    () => fieldValues.map(function(obj) {
       if (obj.value === true) {
         return "1";
       }
@@ -30,23 +34,21 @@ export function getQRCodeData(formData: Config): string {
       else {
         return `${obj.value}`.replace(/\n/g, ' ');
       }
-    })
-    .join('\t');
-}
-
-export function QRModal(props: QRModalProps) {
-  const fieldValues = useQRScoutState(state => state.fieldValues);
-  const formData = useQRScoutState(state => state.formData);
-  const title = `${getFieldValue('robot')} - M${getFieldValue(
-    'matchNumber',
-  )}`.toUpperCase();
-
-  const qrCodePreview = useMemo(
-    () => fieldValues.map(f => f.value).join(','),
+    }).join(','),
     [fieldValues],
   );
   const qrCodeData = useMemo(
-    () => fieldValues.map(f => f.value).join(formData.delimiter),
+    () => fieldValues.map(function(obj) {
+      if (obj.value === true) {
+        return "1";
+      }
+      else if (obj.value === false) {
+        return "0";
+      }
+      else {
+        return `${obj.value}`.replace(/\n/g, ' ');
+      }
+    }).join(formData.delimiter),
     [fieldValues],
   );
   //Two seperate values are required- qrCodePreview is what is shown to the user beneath the QR code, qrCodeData is the actual data.

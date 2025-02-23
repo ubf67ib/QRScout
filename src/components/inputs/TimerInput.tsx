@@ -14,7 +14,7 @@ function getAvg(array: any[]) {
   array.forEach(num => {
     avg += num;
   });
-  return avg / array.length;
+  return avg;
 }
 export default function TimerInput(props: ConfigurableInputProps) {
   const data = useQRScoutState(
