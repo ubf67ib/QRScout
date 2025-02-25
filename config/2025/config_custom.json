@@ -128,6 +128,14 @@
       "name": "Autonomous",
       "fields": [
         {
+          "title": "Leave?",
+          "description": "Check if the robot's bumpers fully leave the robot starting line in auto.",
+          "type": "boolean",
+          "required": false,
+          "code": "lve",
+          "defaultValue": false
+        },
+        {
           "title": "Coral L1 Scored",
           "description": "The number of level 1 coral scored during auto.",
           "type": "counter",
