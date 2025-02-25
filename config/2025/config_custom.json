@@ -71,15 +71,6 @@
           "formResetBehavior": "preserve"
         },
         {
-          "title": "Match Number",
-          "description": "Enter the match number.",
-          "type": "number",
-          "required": true,
-          "code": "matchNumber",
-          "defaultValue": 1,
-          "formResetBehavior": "increment"
-        },
-        {
           "title": "Team Number",
           "description": "The team number of the robot you're scouting.",
           "type": "number",
@@ -88,6 +79,15 @@
           "defaultValue": 0,
           "min": 0,
           "max": 19999
+        },
+        {
+          "title": "Match Number",
+          "description": "Enter the match number.",
+          "type": "number",
+          "required": true,
+          "code": "matchNumber",
+          "defaultValue": 1,
+          "formResetBehavior": "increment"
         },
         {
           "title": "Starting Position",
@@ -101,14 +101,6 @@
             "M": "Middle",
             "R": "Right"
           }
-        },
-        {
-          "title": "No Show",
-          "description": "Check if the robot did not show up for the match.",
-          "type": "boolean",
-          "required": false,
-          "code": "noShow",
-          "defaultValue": false
         },
         {
           "title": "Cage Position",
