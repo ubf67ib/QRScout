@@ -361,7 +361,7 @@
         {
           "title": "Defensive Skill",
           "type": "select",
-          "required": true,
+          "required": false,
           "code": "dr",
           "defaultValue": "",
           "choices": {
