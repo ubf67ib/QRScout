@@ -302,14 +302,6 @@
           "step": 1
         },
         {
-          "title": "Incap Timer",
-          "description": "The time it took for the robot to finish autonomous.",
-          "type": "timer",
-          "required": false,
-          "code": "timer",
-          "defaultValue": 0
-        },
-        {
           "title": "Crossed Field/Played Defense?",
           "type": "boolean",
           "required": false,
@@ -337,11 +329,24 @@
           }
         },
         {
-          "title": "Defended?",
+          "title": "Was Defended?",
           "type": "boolean",
           "required": false,
           "code": "DEFEg",
           "defaultValue": false
+        },
+        {
+          "title": "Time Incap",
+          "type": "select",
+          "description": "The amount of time the robot was not able to contribute to winning the match due to unexpected issues.",
+          "required": false,
+          "code": "incap",
+          "defaultValue": "0",
+          "choices": {
+            "0": "<15 Sec",
+            "20": "15-30 Sec",
+            "40": ">30 Sec"
+          }
         }
       ]
     },
@@ -361,7 +366,7 @@
         {
           "title": "Defensive Skill",
           "type": "select",
-          "required": false,
+          "required": true,
           "code": "dr",
           "defaultValue": "",
           "choices": {
