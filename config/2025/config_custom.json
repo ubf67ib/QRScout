@@ -173,7 +173,7 @@
           "title": "Algae Dislodged",
           "type": "counter",
           "required": false,
-          "code": "dto",
+          "code": "dau",
           "defaultValue": 0,
           "min": 0,
           "step": 1
