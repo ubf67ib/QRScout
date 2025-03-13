@@ -1,41 +1,40 @@
 import { produce } from 'immer';
 import { cloneDeep } from 'lodash';
-import { ChangeEvent } from 'react';
-import configJson from '../../config/2024/config_custom.json';
-import { Config } from '../components/inputs/BaseInputProps';
+import configJson from '../../config/2025/config_custom.json';
+import {
+  Config,
+  configSchema,
+  InputBase,
+} from '../components/inputs/BaseInputProps';
 import { createStore } from './createStore';
 
-function buildConfig(c: Config) {
-  let config: Config = { ...c };
-  config.sections
-    .map(s => s.fields)
-    .flat()
-    .forEach(f => (f.value = f.defaultValue));
-  return config;
-}
+type Result<T> = { success: true; data: T } | { success: false; error: Error };
 
 function getDefaultConfig(): Config {
-  return buildConfig(configJson as Config);
+  const config = configSchema.safeParse(configJson);
+  if (!config.success) {
+    console.error(config.error);
+    throw new Error('Invalid config schema');
+  }
+  return config.data;
 }
 
 export function getConfig() {
   const configData = cloneDeep(useQRScoutState.getState().formData);
-
-  configData.sections
-    .map(s => s.fields)
-    .flat()
-    .forEach(f => delete f.value);
-
   return configData;
 }
 
 export interface QRScoutState {
   formData: Config;
+  fieldValues: { code: string; value: any }[];
   showQR: boolean;
 }
 
 const initialState: QRScoutState = {
   formData: getDefaultConfig(),
+  fieldValues: getDefaultConfig().sections.flatMap(s =>
+    s.fields.map(f => ({ code: f.code, value: f.defaultValue })),
+  ),
   showQR: false,
 };
 
@@ -43,7 +42,7 @@ export const useQRScoutState = createStore<QRScoutState>(
   initialState,
   'qrScout',
   {
-    version: 1,
+    version: 2,
   },
 );
 
@@ -51,73 +50,81 @@ export function resetToDefaultConfig() {
   useQRScoutState.setState(initialState);
 }
 
-export function updateValue(sectionName: string, code: string, data: any) {
+export async function fetchConfigFromURL(url: string): Promise<Result<void>> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch config from URL: ${response.statusText}`);
+    }
+    const configText = await response.text();
+    return setConfig(configText);
+  } catch (error) {
+    return { success: false, error: error as Error };
+  }
+}
+
+export function updateValue(code: string, data: any) {
   useQRScoutState.setState(
     produce((state: QRScoutState) => {
-      let section = state.formData.sections.find(s => s.name === sectionName);
-      if (section) {
-        let field = section.fields.find(f => f.code === code);
-        if (field) {
-          field.value = data;
-        }
+      const field = state.fieldValues.find(f => f.code === code);
+      if (field) {
+        field.value = data;
       }
     }),
   );
 }
 
-export function resetSections() {
-  useQRScoutState.setState(
-    produce((state: QRScoutState) =>
-      state.formData.sections
-        .filter(s => !s.preserveDataOnReset)
-        .map(s => s.fields)
-        .flat()
-        .forEach(f => {
-          if (!f.preserveDataOnReset) {
-            f.value = f.defaultValue;
-          } else if (
-            (f.type === 'number' || f.type === 'counter') &&
-            f.autoIncrementOnReset
-          ) {
-            f.value = f.value + 1;
-          }
-        }),
-    ),
-  );
+export function getFieldValue(code: string) {
+  return useQRScoutState.getState().fieldValues.find(f => f.code === code)
+    ?.value;
+}
+
+export function resetFields() {
+  window.dispatchEvent(new CustomEvent('resetFields', { detail: 'reset' }));
+}
+
+export function forceResetFields() {
+  window.dispatchEvent(new CustomEvent('forceResetFields', { detail: 'forceReset' }));
 }
 
 export function setFormData(config: Config) {
-  useQRScoutState.setState({ formData: buildConfig(config) });
+  const oldState = useQRScoutState.getState();
+  forceResetFields();
+  const newFieldValues = config.sections.flatMap(s =>
+    s.fields.map(f => ({ code: f.code, value: f.defaultValue })),
+  );
+  useQRScoutState.setState({ ...oldState, fieldValues: newFieldValues, formData: config });
 }
 
-export function setConfig(configText: string) {
-  const jsonData = JSON.parse(configText);
-  setFormData(jsonData as Config);
-}
-
-export function uploadConfig(evt: ChangeEvent<HTMLInputElement>) {
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    const configText = e.target?.result as string;
-    setConfig(configText);
-  };
-  if (evt.currentTarget.files && evt.currentTarget.files.length > 0) {
-    reader.readAsText(evt.currentTarget.files[0]);
+export function setConfig(configText: string): Result<void> {
+  let jsonData: any;
+  try {
+    jsonData = JSON.parse(configText);
+  } catch (e: any) {
+    return { success: false, error: e.message };
   }
+  const c = configSchema.safeParse(jsonData);
+  if (!c.success) {
+    console.error(c.error);
+    return { success: false, error: c.error };
+  }
+  setFormData(c.data);
+  return { success: true, data: undefined };
 }
 
-export const inputSelector =
-  (section: string, code: string) => (state: QRScoutState) => {
+export function inputSelector<T extends InputBase>(
+  section: string,
+  code: string,
+): (state: QRScoutState) => T | undefined {
+  return (state: QRScoutState) => {
     const formData = state.formData;
-    return formData.sections
+    const field = formData.sections
       .find(s => s.name === section)
       ?.fields.find(f => f.code === code);
-  };
 
-export function getFieldValue(code: string) {
-  return useQRScoutState
-    .getState()
-    .formData.sections.map(s => s.fields)
-    .flat()
-    .find(f => f.code === code)?.value;
+    if (!field) {
+      return undefined;
+    }
+    return field as T;
+  };
 }

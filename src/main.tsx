@@ -1,9 +1,7 @@
-import { render } from 'preact'
-import { App } from './app.tsx'
-import './index.css'
+import { createRoot } from 'react-dom/client';
+import { App } from './app.tsx';
+import './index.css';
 
-import { ThemeProvider } from "next-themes"
+const root = createRoot(document.getElementById('app')!);
 
-render( <ThemeProvider attribute='class'>
-<App />
-</ThemeProvider>, document.getElementById('app')!)
+root.render(<App />);

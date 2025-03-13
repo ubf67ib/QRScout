@@ -1,7 +1,9 @@
 {
-  "$schema": "../schema.json",
+  "$schema": "https://frc2713.github.io/QRScout/schema.json",
   "title": "QRScout",
   "page_title": "Crescendo",
+  "teamNumber": 2713,
+  "delimiter": "\t",
   "sections": [
     {
       "name": "Prematch",
@@ -9,20 +11,23 @@
       "fields": [
         {
           "title": "Scouter Initials",
+          "description": "Enter the initials of the scouter.",
           "type": "text",
           "required": true,
           "code": "scouter"
         },
         {
           "title": "Match Number",
+          "description": "Enter the match number.",
           "type": "number",
           "required": true,
           "code": "matchNumber",
-          "preserveDataOnReset": true,
-          "autoIncrementOnReset": true
+          "autoIncrementOnReset": true,
+          "defaultValue": 1
         },
         {
           "title": "Robot",
+          "description": "The robot you are scouting this match, based on driver station position.",
           "type": "select",
           "required": true,
           "code": "robot",
@@ -38,12 +43,16 @@
         },
         {
           "title": "Team Number",
+          "description": "The team number of the robot you're scouting.",
           "type": "number",
           "required": true,
-          "code": "teamNumber"
+          "code": "teamNumber",
+          "min": 0,
+          "max": 19999
         },
         {
           "title": "Starting Position",
+          "description": "The starting position of the robot.",
           "type": "select",
           "required": true,
           "code": "Prsp",
@@ -56,6 +65,7 @@
         },
         {
           "title": "No Show",
+          "description": "Check if the robot did not show up for the match.",
           "type": "boolean",
           "defaultValue": false,
           "required": false,
@@ -68,14 +78,24 @@
       "fields": [
         {
           "title": "Moved?",
+          "description": "Check if the robot moved during autonomous.",
           "type": "boolean",
           "defaultValue": false,
           "required": false,
           "code": "Mved"
         },
         {
+          "code": "timer",
+          "title": "Timer",
+          "description": "The time it took for the robot to finish autonomous.",
+          "type": "timer",
+          "defaultValue": 0,
+          "required": false
+        },
+        {
           "code": "ausc",
           "title": "Speaker Scored",
+          "description": "The number of speaker shots scored during autonomous.",
           "type": "counter",
           "defaultValue": 0,
           "min": 0,
@@ -84,6 +104,7 @@
         {
           "code": "auskpm",
           "title": "Speaker Missed",
+          "description": "The number of speaker shots missed during autonomous.",
           "type": "counter",
           "defaultValue": 0,
           "min": 0,
@@ -103,7 +124,9 @@
             "6": "Midline 3 (Middle)",
             "7": "Midline 2",
             "8": "Midline 1 (Amp Edge)"
-          }
+          },
+          "defaultValue": "",
+          "required": false
         },
         {
           "code": "auf",
@@ -184,14 +207,10 @@
         {
           "code": "or",
           "title": "Offense Skill",
-          "type": "select",
-          "choices": {
-            "1": "Not Effective",
-            "2": "Average",
-            "3": "Very Effective",
-            "x": "Not Observed"
-          },
-          "defaultValue": "x",
+          "type": "range",
+          "defaultValue": 3,
+          "min": 1,
+          "max": 5,
           "required": false
         },
         {

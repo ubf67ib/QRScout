@@ -1,20 +1,30 @@
-import { useMemo } from 'preact/hooks';
-import QRCode from 'qrcode.react';
+import { Copy, QrCode } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useMemo } from 'react';
 import { getFieldValue, useQRScoutState } from '../../store/store';
-import { Modal } from '../core/Modal';
-import { Config } from '../inputs/BaseInputProps';
+import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 import { PreviewText } from './PreviewText';
 
 export interface QRModalProps {
-  show: boolean;
-  onDismiss: () => void;
+  disabled?: boolean;
 }
 
-export function getQRCodeData(formData: Config): string {
-  return formData.sections
-    .map(s => s.fields)
-    .flat()
-    .map(function(obj) {
+export function QRModal(props: QRModalProps) {
+  const fieldValues = useQRScoutState(state => state.fieldValues);
+  const formData = useQRScoutState(state => state.formData);
+  const title = `${getFieldValue('robot')} - M${getFieldValue(
+    'matchNumber',
+  )}`.toUpperCase();
+
+  const qrCodePreview = useMemo(
+    () => fieldValues.map(function(obj) {
       if (obj.value === true) {
         return "1";
       }
@@ -24,25 +34,52 @@ export function getQRCodeData(formData: Config): string {
       else {
         return `${obj.value}`.replace(/\n/g, ' ');
       }
-    })
-    .join('\t');
-}
+    }).join(','),
+    [fieldValues],
+  );
+  const qrCodeData = useMemo(
+    () => fieldValues.map(function(obj) {
+      if (obj.value === true) {
+        return "1";
+      }
+      else if (obj.value === false) {
+        return "0";
+      }
+      else {
+        return `${obj.value}`.replace(/\n/g, ' ');
+      }
+    }).join(formData.delimiter),
+    [fieldValues],
+  );
+  //Two seperate values are required- qrCodePreview is what is shown to the user beneath the QR code, qrCodeData is the actual data.
 
-export function QRModal(props: QRModalProps) {
-  const formData = useQRScoutState(state => state.formData);
-
-  const title = `${getFieldValue('robot')} - M${getFieldValue(
-    'matchNumber',
-  )}`.toUpperCase();
-
-  const qrCodeData = useMemo(() => getQRCodeData(formData), [formData]);
   return (
-    <Modal show={props.show} onDismiss={props.onDismiss}>
-      <div className="flex flex-col items-center pt-8 px-4 bg-white rounded-md">
-        <QRCode className="m-2 mt-4" size={256} value={qrCodeData} />
-        <h1 className="text-3xl text-gray-800 font-rhr-ns ">{title}</h1>
-        <PreviewText data={qrCodeData} />
-      </div>
-    </Modal>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button disabled={props.disabled}>
+          <QrCode className="size-5" />
+          Commit
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle className="text-3xl text-primary text-center font-rhr-ns tracking-wider ">
+          {title}
+        </DialogTitle>
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-white p-4 rounded-md">
+            <QRCodeSVG className="m-2 mt-4" size={256} value={qrCodeData} />
+          </div>
+          <PreviewText data={qrCodePreview} />
+        </div>
+        <DialogFooter>
+          <Button
+            variant="ghost"
+            onClick={() => navigator.clipboard.writeText(qrCodeData)}
+          >
+            <Copy className="size-4" /> Copy Data
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
