@@ -1,6 +1,6 @@
 {
   "title": "QRScout",
-  "page_title": "Reefscape V1.0",
+  "page_title": "Reefscape V1.1",
   "delimiter": "\t",
   "teamNumber": 2713,
   "theme": {
@@ -258,7 +258,7 @@
           "description": "The number of coral missed from all levels during teleop. Includes misses that score L1 accidentally.",
           "type": "counter",
           "required": false,
-          "code": "CMA",
+          "code": "CMT",
           "defaultValue": 0,
           "min": 0,
           "step": 1
